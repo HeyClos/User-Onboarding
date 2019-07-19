@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { withFormik, Form, Field } from "formik";
 import axios from "axios";
 import * as Yup from "yup";
-import "./login-form.css";
+//import "./login-form.css";
 
 window.axios = axios;
 
-function LoginForm({ errors, touched, isSubmitting }) {
+function LoginForm({ touched, isSubmitting, handleSubmit }) {
   // console.log(errors);
-  console.log(isSubmitting);
+  // console.log(isSubmitting);
   // console.log(touched);
   return (
     <Form className="login-form">
@@ -20,62 +20,70 @@ function LoginForm({ errors, touched, isSubmitting }) {
           type="text"
           id="name"
           name="name"
-          className={errors.firstName ? "invalid" : ""}
+          placeholder="Enter name here"
+          //className={errors.firstName ? "invalid" : ""}
           // defaultValue="john"
         />
-        <p className="error-text">
+        {/* <p className="error-text">
           {touched.firstName && errors.firstName}
-        </p>
+        </p> */}
       </div>
 
       <div className="form-group">
-        <label>First Name</label>
+        <label>Email</label>
         <Field
-          autoComplete="off"
-          type="text"
+          // autoComplete="off"
+          type="email"
           id="email"
           name="email"
-          className={errors.firstName ? "invalid" : ""}
+          // placeholder="Enter email here"
+          // className={errors.firstName ? "invalid" : ""}
           // defaultValue="john"
         />
-        <p className="error-text">
+        {/* <p className="error-text">
           {touched.firstName && errors.firstName}
-        </p>
+        </p> */}
       </div>
 
       <div className="form-group">
-        <label>First Name</label>
+        <label>Password</label>
         <Field
           autoComplete="off"
-          type="text"
+          type="password"
           id="password"
           name="password"
-          className={errors.firstName ? "invalid" : ""}
+          placeholder="Enter pasword here"
+          // className={errors.firstName ? "invalid" : ""}
           // defaultValue="john"
         />
-        <p className="error-text">
+        {/* <p className="error-text">
           {touched.firstName && errors.firstName}
-        </p>
+        </p> */}
       </div>
-      
-     <checkbox></checkbox>
+
+      <label>
+        <Field type="checkbox" name="tos" />
+        I read the terms!
+      </label>
 
       {isSubmitting && <p>Loading...</p>}
-      <button
+      <button type="submit"
         className="submit-button"
         disabled={isSubmitting}
       >
-        Submit &rarr;
+        Submit
       </button>
     </Form>
   );
 }
 
 export default withFormik({
-  mapPropsToValues: () => {
+  mapPropsToValues: ({name, email, password, tos}) => {
     return {
-      firstName: "",
-      lastName: ""
+      name: name || "",
+      email: email || "",
+      password: password || "",
+      tos: tos || false
     };
   },
   handleSubmit: (values, formikBag) => {
@@ -92,16 +100,18 @@ export default withFormik({
     });
   },
   validationSchema: Yup.object().shape({
-    firstName: Yup.string()
-      .min(
-        3,
-        "First Name should be at least 5 characters long"
-      )
+    name: Yup.string()
+      .min(3, "First Name should be at least 3 characters long")
       .max(10)
       .required("First Name is required"),
-    lastName: Yup.string()
+    email: Yup.string()
       .min(3)
-      .max(10)
-      .required()
+      .max(20)
+      .required(),
+    password: Yup.string()
+    .min(3, "your password must have at least 3 characters")
+    .max(10)
+    .required("password is required"),
+    tos: Yup.boolean().oneOf([true], "gotta be true bro")
   })
 })(LoginForm);
