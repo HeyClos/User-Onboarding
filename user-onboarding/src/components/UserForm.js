@@ -1,12 +1,15 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { Form, Field, withFormik } from 'formik';
+import * as Yup from 'yup';
 
 const UserForm = ({ errors, touched, values, handleSubmit, status }) => {
-    const [animals, setAnimals] = useState([]);
-    console.log(animals);
+    const [users, setUsers] = useState([]);
+    console.log(users);
   
     useEffect(() => {
       if (status) {
-        setAnimals([...animals, status]);
+        setUsers([...users, status]);
       }
     }, [status]);
   
@@ -35,17 +38,13 @@ const UserForm = ({ errors, touched, values, handleSubmit, status }) => {
           <button type="submit">Submit!</button>
         </Form>
   
-        {animals.map(animal => (
-          <p key={animal.id}>{animal.species}</p>
+        {users.map(user => (
+          <p key={user.id}>{user.email}</p>
         ))}
       </div>
     );
   };
-  
-  // Higher Order Component - HOC
-  // Hard to share component / stateful logic (custom hooks)
-  // Function that takes in a component, extends some logic onto that component,
-  // returns a _new_ component (copy of the passed in component with the extended logic)
+
   const FormikForm = withFormik({
     mapPropsToValues({ name, email, password, tos }) {
       return {
@@ -64,7 +63,9 @@ const UserForm = ({ errors, touched, values, handleSubmit, status }) => {
         .required('Email is required'),
       password: Yup.string()
         .min(7, "Password must be 7 characters or longer")
-        .required('You dont want just anybody logging in!')
+        .required('You dont want just anybody logging in!'),
+      tos: Yup.bool()
+        .required('You dont have to read them, just accept')
     }),
   
     handleSubmit(values, { setStatus }) {
@@ -75,6 +76,6 @@ const UserForm = ({ errors, touched, values, handleSubmit, status }) => {
         })
         .catch(err => console.log(err.response));
     }
-  })(UserForm); // currying functions in Javascript
+  })(UserForm); 
   
   export default FormikForm;
